@@ -7,18 +7,19 @@ public class EnemyAI : MonoBehaviour
 {
     [SerializeField] private Vector2 movementOffset;
     [SerializeField] private PlayerController playerController;
-    [SerializeField] private Animator enemyAnimator;
     [SerializeField] private GridManager gridManager;
     [SerializeField] private float movementSpeed = 2f;
     
     
     private PathFinding pathFinder;
     private List<Node> path = new();
+    private Animator enemyAnimator;
 
     private void Start()
     {
         pathFinder = new PathFinding(gridManager);
         playerController.OnPlayerMoved += HandlePlayerMoved;
+        enemyAnimator = GetComponent<Animator>();
     }
     
     

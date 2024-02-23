@@ -6,18 +6,21 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour 
 {
     [SerializeField] private Vector2 movementOffset;
-    [SerializeField] private Animator animator;
     [SerializeField] private float movementSpeed = 2f;
     [SerializeField] private GridManager gridManager;
+    
+    
     public delegate void PlayerMovedHandler();
     public event PlayerMovedHandler OnPlayerMoved;
     
     private PathFinding pathFinder;
     private List<Node> path = new();
+    private Animator animator;
     
     private void Start()
     {
         pathFinder = new PathFinding(gridManager);
+        animator = GetComponent<Animator>();
     }
 
     void Update()
