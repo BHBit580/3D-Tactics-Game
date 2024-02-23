@@ -7,8 +7,6 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GameObject cubePrefab;
     [SerializeField] private FloatSO cubeLength;
     
-    
-    private Dictionary<Vector2Int , GameObject> cubeDictionary = new();
     private Dictionary<Vector2Int, Node> grid = new();
     
     public Dictionary<Vector2Int, Node> Grid => grid;
@@ -27,7 +25,7 @@ public class GridManager : MonoBehaviour
             for (int z = 0; z < 10; z++)
             {
                 Vector3 position = new Vector3(x, 0, z) * cubeLength.data;
-                GameObject cube = Instantiate(cubePrefab, position, Quaternion.identity);cubeDictionary.Add(new Vector2Int(x, z), cube);
+                GameObject cube = Instantiate(cubePrefab, position, Quaternion.identity);
                 cube.transform.parent = cubesParent.transform;
                 cube.AddComponent<TileInfo>();
                 cube.GetComponent<TileInfo>().tileCoordinates = new Vector2Int(x, z);

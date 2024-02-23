@@ -18,6 +18,7 @@ public class ObstacleManager : MonoBehaviour
         foreach (Vector2Int gridPosition in obstacleGridArraySO.data)
         {
             CreateObstacle(gridPosition);
+            gridManager.BlockNode(gridPosition);
         }
     }
 

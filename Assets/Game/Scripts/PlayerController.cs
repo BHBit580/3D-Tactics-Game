@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Vector2 movementOffset;
     [SerializeField] private float movementSpeed = 2f;
-    
+    [SerializeField] private GridManager gridManager;
     public delegate void PlayerMovedHandler();
     public event PlayerMovedHandler OnPlayerMoved;
     
@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     
     private void Start()
     {
-        pathFinder = FindObjectOfType<PathFinding>();
+        pathFinder = new PathFinding(gridManager);
     }
 
     void Update()
@@ -30,14 +30,16 @@ public class PlayerController : MonoBehaviour
                 if (hit.collider.CompareTag("Tile"))
                 {
                     Vector2Int targetCoordinates = hit.transform.GetComponent<TileInfo>().tileCoordinates; 
-                    pathFinder.SetNewDestination(PlayerCurrentCoordinates(), targetCoordinates); 
-                    RecalculatePath(true);
+                    StopAllCoroutines();
+                    path.Clear();
+                    path = pathFinder.SetNewDestination(FindPlayerCurrentCoordinates(), targetCoordinates);
+                    StartCoroutine(MovePlayer());
                 }
             }
         }
     }
     
-    public Vector2Int PlayerCurrentCoordinates()
+    public Vector2Int FindPlayerCurrentCoordinates()
     {
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo, 10f))
         {
@@ -46,18 +48,7 @@ public class PlayerController : MonoBehaviour
                 return hitInfo.transform.GetComponent<TileInfo>().tileCoordinates;
             }
         }
-        return Vector2Int.zero;                         // returning a default value
-    }
-
-    
-    
-    private void RecalculatePath(bool resetPath)
-    {
-        Vector2Int coordinates = resetPath ? pathFinder.StartCords : PlayerCurrentCoordinates();
-        StopAllCoroutines();
-        path.Clear();
-        path = pathFinder.GetNewPath(coordinates);
-        StartCoroutine(MovePlayer());
+        return Vector2Int.zero;                         
     }
     
     
@@ -80,9 +71,4 @@ public class PlayerController : MonoBehaviour
         }
         OnPlayerMoved?.Invoke();
     }
-
-
-    
-    
-
 }

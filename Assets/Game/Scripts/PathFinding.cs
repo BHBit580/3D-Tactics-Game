@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathFinding : MonoBehaviour 
+public class PathFinding 
 { 
     Vector2Int startCords; 
     Vector2Int targetCords;
@@ -12,41 +11,31 @@ public class PathFinding : MonoBehaviour
     Node targetNode;
     Node currentNode;
 
-    Queue<Node> frontier = new Queue<Node>();
-    Dictionary<Vector2Int, Node> reached = new Dictionary<Vector2Int, Node>();
+    Queue<Node> frontier = new();
+    Dictionary<Vector2Int, Node> reached = new();
 
     private GridManager _gridManager;
-    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
+    Dictionary<Vector2Int, Node> grid = new();
 
     Vector2Int[] searchOrder = { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
-
     
-    public Vector2Int StartCords
+    
+    public PathFinding(GridManager gridManager)
     {
-        get { return startCords; }
+        _gridManager = gridManager;
+        grid = _gridManager.Grid;
     }
-
-    public Vector2Int TargetCords
+    
+    public List<Node> SetNewDestination(Vector2Int startCoordinates, Vector2Int targetCoordinates)
     {
-        get { return targetCords; }
+        startCords = startCoordinates;
+        targetCords = targetCoordinates;
+        startNode = grid[this.startCords];
+        targetNode = grid[this.targetCords];
+        return GetNewPath(startCoordinates);
     }
-        
-
-    private void Awake()
-    {
-        _gridManager = FindObjectOfType<GridManager>();
-        if (_gridManager != null)
-        {
-            grid = _gridManager.Grid;
-        }
-    }
-
-    public List<Node> GetNewPath()
-    {
-        return GetNewPath(startCords);
-    }
-
-    public List<Node> GetNewPath(Vector2Int coordinates)
+    
+    private List<Node> GetNewPath(Vector2Int coordinates)
     {
         _gridManager.ResetNodes();
 
@@ -122,20 +111,5 @@ public class PathFinding : MonoBehaviour
     
         path.Reverse();
         return path;
-    }
-
-
-    public void NotifyReceievers()
-    {
-        BroadcastMessage("RecalculatePath", false, SendMessageOptions.DontRequireReceiver);
-    }
-
-    public void SetNewDestination(Vector2Int startCoordinates, Vector2Int targetCoordinates)
-    {
-        startCords = startCoordinates;
-        targetCords = targetCoordinates;
-        startNode = grid[this.startCords];
-        targetNode = grid[this.targetCords];
-        GetNewPath();
     }
 }
