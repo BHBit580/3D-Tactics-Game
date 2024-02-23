@@ -12,10 +12,6 @@ public class TileInfo : MonoBehaviour
     {
         cubePosition = new Vector2(transform.position.x, transform.position.z);
         tileTextMeshPro = GetComponentInChildren<TextMeshPro>();
-    }
-
-    private void Update()
-    {
         tileTextMeshPro.text = "(" + tileCoordinates.x + ", " + tileCoordinates.y + ")";
     }
 }

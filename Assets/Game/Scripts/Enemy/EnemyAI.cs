@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour , IUnitMovement
+public class EnemyAI : MonoBehaviour 
 {
     [SerializeField] private Vector2 movementOffset;
     [SerializeField] private PlayerController playerController;

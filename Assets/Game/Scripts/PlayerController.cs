@@ -3,13 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IUnitMovement
-{
-    Vector2Int FindCurrentCoordinates();
-    IEnumerator Move();
-}
-
-public class PlayerController : MonoBehaviour , IUnitMovement
+public class PlayerController : MonoBehaviour 
 {
     [SerializeField] private Vector2 movementOffset;
     [SerializeField] private Animator animator;
