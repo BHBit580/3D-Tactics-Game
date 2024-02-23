@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+public class EnemyAI : MonoBehaviour , IUnitMovement
 {
     [SerializeField] private Vector2 movementOffset;
     [SerializeField] private PlayerController playerController;
+    [SerializeField] private Animator enemyAnimator;
     [SerializeField] private GridManager gridManager;
     [SerializeField] private float movementSpeed = 2f;
     
@@ -23,16 +24,16 @@ public class EnemyAI : MonoBehaviour
     
     private void HandlePlayerMoved()
     {
-        Vector2Int targetCoordinates = playerController.FindPlayerCurrentCoordinates();
+        Vector2Int targetCoordinates = playerController.FindCurrentCoordinates();
         StopAllCoroutines();
         path.Clear();
-        path = pathFinder.SetNewDestination(FindEnemyCurrentCoordinates(), targetCoordinates);
+        path = pathFinder.SetNewDestination(FindCurrentCoordinates(), targetCoordinates);
         path.Remove(path[path.Count - 1]);
-        StartCoroutine(MoveEnemy());
+        StartCoroutine(Move());
     }
     
     
-    private Vector2Int FindEnemyCurrentCoordinates()
+    public Vector2Int FindCurrentCoordinates()
     {
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo, 10f))
         {
@@ -44,9 +45,10 @@ public class EnemyAI : MonoBehaviour
         return Vector2Int.zero;                         
     }
     
-    IEnumerator MoveEnemy()
+    public IEnumerator Move()
     {
-        gridManager.UnBlockNode(FindEnemyCurrentCoordinates());
+        enemyAnimator.SetBool("isRunning" , true);
+        gridManager.UnBlockNode(FindCurrentCoordinates());
         
         for (int i = 1; i < path.Count; i++)
         {
@@ -63,8 +65,9 @@ public class EnemyAI : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
         }
-        
-        gridManager.BlockNode(FindEnemyCurrentCoordinates());
+        enemyAnimator.SetBool("isRunning" , false);
+        transform.LookAt(playerController.transform.position);
+        gridManager.BlockNode(FindCurrentCoordinates());
     }
     
     private void OnDestroy()

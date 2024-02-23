@@ -3,9 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public interface IUnitMovement
+{
+    Vector2Int FindCurrentCoordinates();
+    IEnumerator Move();
+}
+
+public class PlayerController : MonoBehaviour , IUnitMovement
 {
     [SerializeField] private Vector2 movementOffset;
+    [SerializeField] private Animator animator;
     [SerializeField] private float movementSpeed = 2f;
     [SerializeField] private GridManager gridManager;
     public delegate void PlayerMovedHandler();
@@ -32,14 +39,14 @@ public class PlayerController : MonoBehaviour
                     Vector2Int targetCoordinates = hit.transform.GetComponent<TileInfo>().tileCoordinates; 
                     StopAllCoroutines();
                     path.Clear();
-                    path = pathFinder.SetNewDestination(FindPlayerCurrentCoordinates(), targetCoordinates);
-                    StartCoroutine(MovePlayer());
+                    path = pathFinder.SetNewDestination(FindCurrentCoordinates(), targetCoordinates);
+                    StartCoroutine(Move());
                 }
             }
         }
     }
     
-    public Vector2Int FindPlayerCurrentCoordinates()
+    public Vector2Int FindCurrentCoordinates()
     {
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo, 10f))
         {
@@ -51,9 +58,10 @@ public class PlayerController : MonoBehaviour
         return Vector2Int.zero;                         
     }
     
-    
-    IEnumerator MovePlayer()
+    public IEnumerator Move()
     {
+        animator.SetBool("isRunning", true); // Start running animation
+
         for (int i = 1; i < path.Count; i++)
         {
             Vector3 startPosition = transform.position;
@@ -69,6 +77,7 @@ public class PlayerController : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
         }
+        animator.SetBool("isRunning", false); // Stop running animation
         OnPlayerMoved?.Invoke();
     }
 }
